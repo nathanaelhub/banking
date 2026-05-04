@@ -22,6 +22,7 @@ import CustomInput from './CustomInput';
 import { authFormSchema } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { getLoggedInUser, signIn, signUp } from '@/lib/actions/user.actions';
 import PlaidLink from './PlaidLink';
 
@@ -64,6 +65,12 @@ const AuthForm = ({ type }: { type: string }) => {
 
           const newUser = await signUp(userData);
 
+          if (!newUser) {
+            toast.error('Failed to create account. Please try again.');
+            return;
+          }
+
+          toast.success('Account created! Link your bank to get started.');
           setUser(newUser);
         }
 
@@ -73,10 +80,16 @@ const AuthForm = ({ type }: { type: string }) => {
             password: data.password,
           })
 
-          if(response) router.push('/')
+          if (!response) {
+            toast.error('Invalid email or password.');
+            return;
+          }
+
+          toast.success('Welcome back!');
+          router.push('/');
         }
       } catch (error) {
-        console.log(error);
+        toast.error('Something went wrong. Please try again.');
       } finally {
         setIsLoading(false);
       }
@@ -86,13 +99,13 @@ const AuthForm = ({ type }: { type: string }) => {
     <section className="auth-form">
       <header className='flex flex-col gap-5 md:gap-8'>
           <Link href="/" className="cursor-pointer flex items-center gap-1">
-            <Image 
+            <Image
               src="/icons/logo.svg"
               width={34}
               height={34}
-              alt="Horizon logo"
+              alt="Apex Finance logo"
             />
-            <h1 className="text-26 font-ibm-plex-serif font-bold text-black-1">Horizon</h1>
+            <h1 className="text-26 font-ibm-plex-serif font-bold text-black-1">Apex</h1>
           </Link>
 
           <div className="flex flex-col gap-1 md:gap-3">

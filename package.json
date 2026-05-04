@@ -1,5 +1,5 @@
 {
-  "name": "jsm_banking",
+  "name": "apex-finance",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -32,6 +32,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.51.3",
     "react-plaid-link": "^3.5.1",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.4"

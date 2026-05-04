@@ -195,6 +195,27 @@ export const getTransactionStatus = (date: Date) => {
   return date > twoDaysAgo ? "Processing" : "Success";
 };
 
+export function exportTransactionsToCSV(transactions: Transaction[]) {
+  const headers = ['Date', 'Name', 'Amount', 'Category', 'Channel', 'Status'];
+  const rows = transactions.map((t) => [
+    new Date(t.date).toLocaleDateString('en-US'),
+    `"${t.name.replace(/"/g, '""')}"`,
+    t.amount.toFixed(2),
+    t.category,
+    t.paymentChannel,
+    getTransactionStatus(new Date(t.date)),
+  ]);
+
+  const csv = [headers, ...rows].map((row) => row.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `apex-transactions-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export const authFormSchema = (type: string) => z.object({
   // sign up
   firstName: type === 'sign-in' ? z.string().optional() : z.string().min(3),
