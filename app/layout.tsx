@@ -7,8 +7,15 @@ import { Toaster } from "sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Nova Finance",
+  metadataBase: new URL("https://banking-umber-one.vercel.app"),
+  title: { default: "Nova Finance", template: "%s · Nova Finance" },
   description: "Nova Finance — modern banking built for clarity and control.",
+  openGraph: {
+    title: "Nova Finance",
+    description: "Modern banking built for clarity and control.",
+    siteName: "Nova Finance",
+    type: "website",
+  },
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
