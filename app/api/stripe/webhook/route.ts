@@ -28,12 +28,15 @@ export async function POST(req: Request) {
   }
 
   switch (event.type) {
+    case 'invoice.payment_failed':
+      // payment failures deserve a warning, not an info line
+      console.warn(`[stripe webhook] ${event.type}`, event.id);
+      break;
     case 'checkout.session.completed':
     case 'customer.subscription.created':
     case 'customer.subscription.updated':
     case 'customer.subscription.deleted':
     case 'customer.subscription.trial_will_end':
-    case 'invoice.payment_failed':
     case 'invoice.payment_succeeded':
       console.log(`[stripe webhook] ${event.type}`, event.id);
       break;
