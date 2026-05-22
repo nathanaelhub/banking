@@ -76,7 +76,7 @@ const TransactionSearch = ({ transactions }: { transactions: Transaction[] }) =>
         </div>
         <button
           onClick={() => exportTransactionsToCSV(filtered)}
-          className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-14 font-semibold text-gray-700 transition-colors hover:bg-gray-50"
+          className="flex items-center gap-2 rounded-[8px] border border-[#E3E1DA] px-3.5 py-2 text-[12.5px] font-medium text-[#3A3547] transition-colors hover:bg-[#F4F3EE] bg-white"
         >
           <Image src="/icons/arrow-down.svg" alt="export" width={16} height={16} />
           Export CSV
@@ -85,39 +85,41 @@ const TransactionSearch = ({ transactions }: { transactions: Transaction[] }) =>
 
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-2 py-16">
-          <p className="text-18 font-semibold text-gray-700">No transactions found</p>
-          <p className="text-14 text-gray-500">Try adjusting your search or filter</p>
+          <p className="text-[16px] font-semibold text-[#14111C]">No transactions found</p>
+          <p className="text-[13.5px] text-[#6B6577]">Try adjusting your search or filter</p>
         </div>
       ) : (
         <>
-          <p className="text-14 text-gray-500">
+          <p className="text-[12.5px] text-[#6B6577]">
             {filtered.length} transaction{filtered.length !== 1 ? 's' : ''} found
           </p>
-          <TransactionsTable transactions={currentTransactions} />
+          <div className="bg-white border border-[#ECEAE3] rounded-[16px] shadow-[0_1px_2px_rgba(20,17,28,.04)] overflow-hidden">
+            <TransactionsTable transactions={currentTransactions} />
+          </div>
           {totalPages > 1 && (
-            <div className="my-4 flex items-center justify-between">
+            <div className="my-2 flex items-center justify-between">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage <= 1}
-                className="flex items-center gap-2 text-14 font-semibold disabled:opacity-40"
+                className="flex items-center gap-2 text-[13px] font-medium text-[#3A3547] disabled:opacity-40 border border-[#E3E1DA] rounded-[8px] px-3 py-1.5 bg-white hover:bg-[#F4F3EE] transition-colors"
               >
-                <Image src="/icons/arrow-left.svg" alt="prev" width={20} height={20} />
+                <Image src="/icons/arrow-left.svg" alt="prev" width={16} height={16} />
                 Prev
               </button>
-              <p className="text-14">
+              <p className="text-[12.5px] text-[#6B6577]">
                 {currentPage} / {totalPages}
               </p>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage >= totalPages}
-                className="flex items-center gap-2 text-14 font-semibold disabled:opacity-40"
+                className="flex items-center gap-2 text-[13px] font-medium text-[#3A3547] disabled:opacity-40 border border-[#E3E1DA] rounded-[8px] px-3 py-1.5 bg-white hover:bg-[#F4F3EE] transition-colors"
               >
                 Next
                 <Image
                   src="/icons/arrow-left.svg"
                   alt="next"
-                  width={20}
-                  height={20}
+                  width={16}
+                  height={16}
                   className="-scale-x-100"
                 />
               </button>

@@ -48,14 +48,14 @@ const SpendingChart = ({ transactions }: { transactions: Transaction[] }) => {
       {
         label: 'Income',
         data: income,
-        backgroundColor: '#10B981',
+        backgroundColor: '#7C3AED',
         borderRadius: 6,
         borderSkipped: false as const,
       },
       {
         label: 'Expenses',
         data: expenses,
-        backgroundColor: '#7C3AED',
+        backgroundColor: '#E5DDF5',
         borderRadius: 6,
         borderSkipped: false as const,
       },
@@ -65,9 +65,23 @@ const SpendingChart = ({ transactions }: { transactions: Transaction[] }) => {
   const options = {
     responsive: true,
     plugins: {
-      legend: { position: 'top' as const },
+      legend: {
+        position: 'top' as const,
+        labels: {
+          font: { size: 12 },
+          color: '#6B6577',
+          boxWidth: 10,
+          boxHeight: 10,
+          borderRadius: 3,
+        },
+      },
       title: { display: false },
       tooltip: {
+        backgroundColor: '#14111C',
+        titleColor: '#fff',
+        bodyColor: 'rgba(255,255,255,.75)',
+        padding: 10,
+        cornerRadius: 8,
         callbacks: {
           label: (ctx: { dataset: { label?: string }; parsed: { y: number } }) =>
             `${ctx.dataset.label}: $${ctx.parsed.y.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
@@ -75,9 +89,16 @@ const SpendingChart = ({ transactions }: { transactions: Transaction[] }) => {
       },
     },
     scales: {
+      x: {
+        grid: { display: false },
+        ticks: { color: '#6B6577', font: { size: 11 } },
+      },
       y: {
         beginAtZero: true,
+        grid: { color: '#F4F3EE' },
         ticks: {
+          color: '#6B6577',
+          font: { size: 11 },
           callback: (value: string | number) =>
             `$${Number(value).toLocaleString()}`,
         },
@@ -86,9 +107,18 @@ const SpendingChart = ({ transactions }: { transactions: Transaction[] }) => {
   };
 
   return (
-    <section className="flex w-full flex-col gap-4 rounded-xl border border-gray-200 p-4 shadow-chart sm:p-6">
-      <h2 className="header-2">Spending Overview</h2>
-      <Bar data={data} options={options} />
+    <section className="bg-white border border-[#ECEAE3] rounded-[16px] shadow-[0_1px_2px_rgba(20,17,28,.04)]">
+      <div className="flex items-center justify-between px-[18px] pt-4 pb-1.5">
+        <div>
+          <h3 className="text-[14.5px] font-semibold tracking-[-0.005em] text-[#14111C]">
+            Spending Overview
+          </h3>
+          <p className="text-[12px] text-[#6B6577] mt-0.5">Income vs Expenses · last 6 months</p>
+        </div>
+      </div>
+      <div className="px-[18px] pb-[18px]">
+        <Bar data={data} options={options} />
+      </div>
     </section>
   );
 };

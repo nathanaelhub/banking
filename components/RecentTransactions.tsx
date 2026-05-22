@@ -1,7 +1,4 @@
 import Link from 'next/link'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BankTabItem } from './BankTabItem'
-import BankInfo from './BankInfo'
 import TransactionsTable from './TransactionsTable'
 import { Pagination } from './Pagination'
 
@@ -22,53 +19,29 @@ const RecentTransactions = ({
   )
 
   return (
-    <section className="recent-transactions">
-      <header className="flex items-center justify-between">
-        <h2 className="recent-transactions-label">Recent transactions</h2>
-        <Link
-          href={`/transaction-history/?id=${appwriteItemId}`}
-          className="view-all-btn"
-        >
-          View all
-        </Link>
-      </header>
-
-      <Tabs defaultValue={appwriteItemId} className="w-full">
-      <TabsList className="recent-transactions-tablist">
-          {accounts.map((account: Account) => (
-            <TabsTrigger key={account.id} value={account.appwriteItemId}>
-              <BankTabItem
-                key={account.id}
-                account={account}
-                appwriteItemId={appwriteItemId}
-              />
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        {accounts.map((account: Account) => (
-          <TabsContent
-            value={account.appwriteItemId}
-            key={account.id}
-            className="space-y-4"
+    <section className="flex flex-col gap-[18px]">
+      <div className="bg-white border border-[#ECEAE3] rounded-[16px] shadow-[0_1px_2px_rgba(20,17,28,.04)]">
+        <div className="flex items-center justify-between px-[18px] pt-4 pb-1.5">
+          <div>
+            <h3 className="text-[14.5px] font-semibold text-[#14111C]">Recent Transactions</h3>
+            <p className="text-[12px] text-[#6B6577] mt-0.5">Across all accounts</p>
+          </div>
+          <Link
+            href={`/transaction-history/?id=${appwriteItemId}`}
+            className="text-[12.5px] font-medium text-[#6B6577] hover:text-[#14111C] border border-[#E3E1DA] rounded-[8px] px-3 py-1.5 bg-white hover:bg-[#F4F3EE] transition-colors"
           >
-            <BankInfo 
-              account={account}
-              appwriteItemId={appwriteItemId}
-              type="full"
-            />
+            View all →
+          </Link>
+        </div>
 
-            <TransactionsTable transactions={currentTransactions} />
-            
+        <TransactionsTable transactions={currentTransactions} />
 
-            {totalPages > 1 && (
-              <div className="my-4 w-full">
-                <Pagination totalPages={totalPages} page={page} />
-              </div>
-            )}
-          </TabsContent>
-        ))}
-      </Tabs>
+        {totalPages > 1 && (
+          <div className="px-[18px] py-4 border-t border-[#ECEAE3]">
+            <Pagination totalPages={totalPages} page={page} />
+          </div>
+        )}
+      </div>
     </section>
   )
 }

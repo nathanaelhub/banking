@@ -1,38 +1,33 @@
-import Image from "next/image";
-
-import { topCategoryStyles } from "@/constants";
-import { cn } from "@/lib/utils";
-
-import { Progress } from "./ui/progress";
-
 const Category = ({ category }: CategoryProps) => {
-  const {
-    bg,
-    circleBg,
-    text: { main, count },
-    progress: { bg: progressBg, indicator },
-    icon,
-  } = topCategoryStyles[category.name as keyof typeof topCategoryStyles] ||
-  topCategoryStyles.default;
-
   return (
-    <div className={cn("gap-[18px] flex p-4 rounded-xl", bg)}>
-      <figure className={cn("flex-center size-10 rounded-full", circleBg)}>
-        <Image src={icon} width={20} height={20} alt={category.name} />
-      </figure>
-      <div className="flex w-full flex-1 flex-col gap-2">
-        <div className="text-14 flex justify-between">
-          <h2 className={cn("font-medium", main)}>{category.name}</h2>
-          <h3 className={cn("font-normal", count)}>{category.count}</h3>
-        </div>
-        <Progress
-          value={(category.count / category.totalCount) * 100}
-          className={cn("h-2 w-full", progressBg)}
-          indicatorClassName={cn("h-2 w-full", indicator)}
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between text-[12.5px]">
+        <span className="flex items-center gap-2">
+          <span
+            className="w-[22px] h-[22px] rounded-[7px] bg-[#F4EEFF] text-[#5B21B6] inline-flex items-center justify-center text-[11px] font-semibold flex-shrink-0"
+          >
+            {category.name[0]}
+          </span>
+          <b className="font-medium text-[#14111C]">{category.name}</b>
+        </span>
+        <span
+          className="text-[#6B6577] text-[11.5px]"
+          style={{ fontFamily: 'var(--font-geist-mono, monospace)' }}
+        >
+          {category.count}
+        </span>
+      </div>
+      <div className="h-1.5 rounded-full bg-[#F4F3EE] overflow-hidden">
+        <div
+          className="h-full rounded-full"
+          style={{
+            width: `${(category.count / category.totalCount) * 100}%`,
+            background: 'linear-gradient(90deg, #A78BFA, #6D28D9)',
+          }}
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Category;
+export default Category

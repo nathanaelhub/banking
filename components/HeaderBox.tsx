@@ -1,15 +1,13 @@
 const HeaderBox = ({ type = "title", title, subtext, user }: HeaderBoxProps) => {
   return (
-    <div className="header-box">
-      <h1 className="header-box-title">
+    <div className="flex flex-col gap-1">
+      <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[#14111C]">
         {title}
         {type === 'greeting' && (
-          <span className="text-bankGradient">
-            &nbsp;{user}
-          </span>
+          <span className="text-[#7C3AED]"> {user}</span>
         )}
       </h1>
-      <p className="header-box-subtext">{subtext}</p>
+      <p className="text-[13.5px] text-[#6B6577]">{subtext}</p>
     </div>
   )
 }

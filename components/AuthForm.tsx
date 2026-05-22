@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image'
 import Link from 'next/link'
 import React, { useState } from 'react'
 
@@ -11,9 +10,7 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
-  FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
@@ -23,7 +20,7 @@ import { authFormSchema } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { getLoggedInUser, signIn, signUp } from '@/lib/actions/user.actions';
+import { signIn, signUp } from '@/lib/actions/user.actions';
 import PlaidLink from './PlaidLink';
 
 const AuthForm = ({ type }: { type: string }) => {
@@ -33,150 +30,185 @@ const AuthForm = ({ type }: { type: string }) => {
 
   const formSchema = authFormSchema(type);
 
-    // 1. Define your form.
-    const form = useForm<z.infer<typeof formSchema>>({
-      resolver: zodResolver(formSchema),
-      defaultValues: {
-        email: "",
-        password: ''
-      },
-    })
-   
-    // 2. Define a submit handler.
-    const onSubmit = async (data: z.infer<typeof formSchema>) => {
-      setIsLoading(true);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: ''
+    },
+  })
 
-      try {
-        // Sign up with Appwrite & create plaid token
-        
-        if(type === 'sign-up') {
-          const userData = {
-            firstName: data.firstName!,
-            lastName: data.lastName!,
-            address1: data.address1!,
-            city: data.city!,
-            state: data.state!,
-            postalCode: data.postalCode!,
-            dateOfBirth: data.dateOfBirth!,
-            ssn: data.ssn!,
-            email: data.email,
-            password: data.password
-          }
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
 
-          const newUser = await signUp(userData);
-
-          if (!newUser) {
-            toast.error('Failed to create account. Please try again.');
-            return;
-          }
-
-          toast.success('Account created! Link your bank to get started.');
-          setUser(newUser);
+    try {
+      if (type === 'sign-up') {
+        const userData = {
+          firstName: data.firstName!,
+          lastName: data.lastName!,
+          address1: data.address1!,
+          city: data.city!,
+          state: data.state!,
+          postalCode: data.postalCode!,
+          dateOfBirth: data.dateOfBirth!,
+          ssn: data.ssn!,
+          email: data.email,
+          password: data.password
         }
 
-        if(type === 'sign-in') {
-          const response = await signIn({
-            email: data.email,
-            password: data.password,
-          })
+        const result = await signUp(userData);
 
-          if (!response) {
-            toast.error('Invalid email or password.');
-            return;
-          }
-
-          toast.success('Welcome back!');
-          router.push('/');
+        if (result?.error || !result?.user) {
+          toast.error(result?.error || 'Failed to create account. Please try again.');
+          return;
         }
-      } catch (error) {
-        toast.error('Something went wrong. Please try again.');
-      } finally {
-        setIsLoading(false);
+
+        toast.success('Account created! Link your bank to get started.');
+        setUser(result.user);
       }
+
+      if (type === 'sign-in') {
+        const result = await signIn({
+          email: data.email,
+          password: data.password,
+        })
+
+        if (result?.error || !result?.user) {
+          toast.error(result?.error || 'Invalid email or password.');
+          return;
+        }
+
+        toast.success('Welcome back!');
+        router.push('/');
+      }
+    } catch (error) {
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
+  }
 
   return (
-    <section className="auth-form">
-      <header className='flex flex-col gap-5 md:gap-8'>
-          <Link href="/" className="cursor-pointer flex items-center gap-1">
-            <Image
-              src="/icons/logo.svg"
-              width={34}
-              height={34}
-              alt="Apex Finance logo"
-            />
-            <h1 className="text-26 font-ibm-plex-serif font-bold text-black-1">Apex</h1>
-          </Link>
-
-          <div className="flex flex-col gap-1 md:gap-3">
-            <h1 className="text-24 lg:text-36 font-semibold text-gray-900">
-              {user 
-                ? 'Link Account'
-                : type === 'sign-in'
-                  ? 'Sign In'
-                  : 'Sign Up'
-              }
-              <p className="text-16 font-normal text-gray-600">
-                {user 
-                  ? 'Link your account to get started'
-                  : 'Please enter your details'
-                }
-              </p>  
-            </h1>
+    <section className="flex min-h-screen w-full flex-col justify-center gap-6 px-14 py-10">
+      {/* Header */}
+      <header className="flex flex-col gap-6">
+        {/* Brand mark + name */}
+        <Link href="/" className="cursor-pointer flex items-center gap-2.5">
+          <div
+            className="w-[32px] h-[32px] rounded-[10px] flex items-center justify-center flex-shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #8B5CF6 0%, #5B21B6 100%)',
+              boxShadow: '0 6px 14px -4px rgba(91,33,182,.55), inset 0 1px 0 rgba(255,255,255,.25)',
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2.4 13.6 10.4 21.6 12 13.6 13.6 12 21.6 10.4 13.6 2.4 12 10.4 10.4Z" fill="#fff"/>
+              <circle cx="18.5" cy="5.5" r="1.6" fill="#fff" opacity=".85"/>
+            </svg>
           </div>
+          <span
+            className="text-[18px] font-semibold tracking-[-0.01em] text-[#14111C]"
+            style={{ fontFamily: 'var(--font-geist, sans-serif)' }}
+          >
+            Apex Finance
+          </span>
+        </Link>
+
+        <div className="flex flex-col gap-1.5">
+          {/* Security badge */}
+          <span
+            className="apex-badge apex-badge-violet mb-1 self-start"
+          >
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+              <path d="M12 22S4 18 4 12V5L12 2L20 5V12C20 18 12 22 12 22Z" stroke="#5B21B6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Bank-grade encryption
+          </span>
+
+          <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[#14111C]">
+            {user
+              ? 'Link your bank'
+              : type === 'sign-in'
+                ? 'Welcome back'
+                : 'Create an account'
+            }
+          </h1>
+          <p className="text-[13.5px] text-[#6B6577]">
+            {user
+              ? 'Connect your bank account to get started with Apex Finance.'
+              : type === 'sign-in'
+                ? 'Sign in to your Apex Finance account.'
+                : 'Get started — it only takes a minute.'
+            }
+          </p>
+        </div>
       </header>
+
       {user ? (
         <div className="flex flex-col gap-4">
           <PlaidLink user={user} variant="primary" />
         </div>
-      ): (
+      ) : (
         <>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
               {type === 'sign-up' && (
                 <>
-                  <div className="flex gap-4">
-                    <CustomInput control={form.control} name='firstName' label="First Name" placeholder='Enter your first name' />
-                    <CustomInput control={form.control} name='lastName' label="Last Name" placeholder='Enter your first name' />
+                  <div className="flex gap-3">
+                    <CustomInput control={form.control} name='firstName' label="First Name" placeholder='Jane' />
+                    <CustomInput control={form.control} name='lastName' label="Last Name" placeholder='Doe' />
                   </div>
-                  <CustomInput control={form.control} name='address1' label="Address" placeholder='Enter your specific address' />
-                  <CustomInput control={form.control} name='city' label="City" placeholder='Enter your city' />
-                  <div className="flex gap-4">
-                    <CustomInput control={form.control} name='state' label="State" placeholder='Example: NY' />
-                    <CustomInput control={form.control} name='postalCode' label="Postal Code" placeholder='Example: 11101' />
+                  <CustomInput control={form.control} name='address1' label="Address" placeholder='123 Main St' />
+                  <CustomInput control={form.control} name='city' label="City" placeholder='New York' />
+                  <div className="flex gap-3">
+                    <CustomInput control={form.control} name='state' label="State" placeholder='NY' />
+                    <CustomInput control={form.control} name='postalCode' label="Postal Code" placeholder='10001' />
                   </div>
-                  <div className="flex gap-4">
+                  <div className="flex gap-3">
                     <CustomInput control={form.control} name='dateOfBirth' label="Date of Birth" placeholder='YYYY-MM-DD' />
-                    <CustomInput control={form.control} name='ssn' label="SSN" placeholder='Example: 1234' />
+                    <CustomInput control={form.control} name='ssn' label="SSN (last 4)" placeholder='1234' />
                   </div>
                 </>
               )}
 
-              <CustomInput control={form.control} name='email' label="Email" placeholder='Enter your email' />
+              <CustomInput control={form.control} name='email' label="Email" placeholder='jane@example.com' />
+              <CustomInput control={form.control} name='password' label="Password" placeholder='••••••••' />
 
-              <CustomInput control={form.control} name='password' label="Password" placeholder='Enter your password' />
-
-              <div className="flex flex-col gap-4">
-                <Button type="submit" disabled={isLoading} className="form-btn">
+              <div className="flex flex-col gap-3 mt-2">
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full h-[42px] rounded-[10px] font-semibold text-white text-[14.5px] transition-all"
+                  style={{
+                    background: 'linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)',
+                    boxShadow: '0 4px 12px -2px rgba(91,33,182,.35)',
+                    border: 'none',
+                  }}
+                >
                   {isLoading ? (
                     <>
-                      <Loader2 size={20} className="animate-spin" /> &nbsp;
+                      <Loader2 size={16} className="animate-spin mr-2" />
                       Loading...
                     </>
-                  ) : type === 'sign-in' 
-                    ? 'Sign In' : 'Sign Up'}
+                  ) : type === 'sign-in'
+                    ? 'Sign in'
+                    : 'Create account'
+                  }
                 </Button>
               </div>
             </form>
           </Form>
 
-          <footer className="flex justify-center gap-1">
-            <p className="text-14 font-normal text-gray-600">
+          <footer className="flex justify-center gap-1.5">
+            <p className="text-[13.5px] font-normal text-[#6B6577]">
               {type === 'sign-in'
-              ? "Don't have an account?"
-              : "Already have an account?"}
+                ? "Don't have an account?"
+                : "Already have an account?"}
             </p>
-            <Link href={type === 'sign-in' ? '/sign-up' : '/sign-in'} className="form-link">
+            <Link
+              href={type === 'sign-in' ? '/sign-up' : '/sign-in'}
+              className="text-[13.5px] font-medium text-[#7C3AED] hover:underline"
+            >
               {type === 'sign-in' ? 'Sign up' : 'Sign in'}
             </Link>
           </footer>

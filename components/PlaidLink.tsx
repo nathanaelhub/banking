@@ -1,7 +1,10 @@
+'use client';
+
 import React, { useCallback, useEffect, useState } from 'react'
 import { Button } from './ui/button'
 import { PlaidLinkOnSuccess, PlaidLinkOptions, usePlaidLink } from 'react-plaid-link'
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { createLinkToken, exchangePublicToken } from '@/lib/actions/user.actions';
 import Image from 'next/image';
 
@@ -21,13 +24,24 @@ const PlaidLink = ({ user, variant }: PlaidLinkProps) => {
   }, [user]);
 
   const onSuccess = useCallback<PlaidLinkOnSuccess>(async (public_token: string) => {
-    await exchangePublicToken({
+    const linking = toast.loading('Linking your bank…');
+
+    const result = await exchangePublicToken({
       publicToken: public_token,
       user,
-    })
+    });
 
+    toast.dismiss(linking);
+
+    if (result?.error || !result?.success) {
+      toast.error(result?.error || 'Could not link your bank. Please try again.');
+      return;
+    }
+
+    toast.success('Bank linked!');
     router.push('/');
-  }, [user])
+    router.refresh();
+  }, [user, router])
   
   const config: PlaidLinkOptions = {
     token,

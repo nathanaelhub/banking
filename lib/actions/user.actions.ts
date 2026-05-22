@@ -44,37 +44,53 @@ export const signIn = async ({ email, password }: signInProps) => {
       secure: true,
     });
 
-    const user = await getUserInfo({ userId: session.userId }) 
+    const user = await getUserInfo({ userId: session.userId })
 
-    return parseStringify(user);
-  } catch (error) {
-    console.error('Error', error);
+    return { user: parseStringify(user) };
+  } catch (error: any) {
+    console.error('signIn error', error);
+    const type = error?.type || error?.response?.type;
+    if (type === 'user_invalid_credentials' || type === 'user_not_found') {
+      return { error: 'Invalid email or password.' };
+    }
+    return { error: error?.message || 'Unable to sign in. Please try again.' };
   }
 }
 
 export const signUp = async ({ password, ...userData }: SignUpParams) => {
   const { email, firstName, lastName } = userData;
-  
+
   let newUserAccount;
+  const { account, database, user: usersService } = await createAdminClient();
 
   try {
-    const { account, database } = await createAdminClient();
-
     newUserAccount = await account.create(
-      ID.unique(), 
-      email, 
-      password, 
+      ID.unique(),
+      email,
+      password,
       `${firstName} ${lastName}`
     );
 
-    if(!newUserAccount) throw new Error('Error creating user')
+    if (!newUserAccount) throw new Error('Error creating user');
+  } catch (error: any) {
+    console.error('signUp (auth) error', error);
+    const type = error?.type || error?.response?.type;
+    if (type === 'user_already_exists') {
+      return { error: 'An account with this email already exists. Try signing in instead.' };
+    }
+    if (type === 'password_recently_used' || type === 'password_personal_data') {
+      return { error: 'Please choose a stronger password.' };
+    }
+    return { error: error?.message || 'Unable to create account. Please try again.' };
+  }
 
+  try {
     const dwollaCustomerUrl = await createDwollaCustomer({
       ...userData,
-      type: 'personal'
-    })
+      type: 'personal',
+    });
 
-    if(!dwollaCustomerUrl) throw new Error('Error creating Dwolla customer')
+    if (!dwollaCustomerUrl) throw new Error('Error creating Dwolla customer');
 
     const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
 
@@ -86,9 +102,9 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
         ...userData,
         userId: newUserAccount.$id,
         dwollaCustomerId,
-        dwollaCustomerUrl
+        dwollaCustomerUrl,
       }
-    )
+    );
 
     const session = await account.createEmailPasswordSession(email, password);
 
@@ -99,9 +115,34 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
       secure: true,
     });
 
-    return parseStringify(newUser);
-  } catch (error) {
-    console.error('Error', error);
+    return { user: parseStringify(newUser) };
+  } catch (error: any) {
+    console.error('signUp (post-auth) error', error);
+
+    // Roll back the Appwrite Auth user so the email is reusable on retry.
+    try {
+      await usersService.delete(newUserAccount.$id);
+    } catch (cleanupError) {
+      console.error('signUp rollback failed', cleanupError);
+    }
+
+    const raw = typeof error?.message === 'string' ? error.message : '';
+    if (raw.includes('"Duplicate"') && raw.includes('/email')) {
+      return { error: 'A payment profile with this email already exists. Use a different email.' };
+    }
+    if (raw.includes('/ssn')) {
+      return { error: 'The SSN you entered is invalid. Use the last 4 digits only.' };
+    }
+    if (raw.includes('/postalCode')) {
+      return { error: 'The postal code you entered is invalid.' };
+    }
+    if (raw.includes('/state')) {
+      return { error: 'Enter a valid US state code (e.g. NY, CA).' };
+    }
+    if (raw.includes('/dateOfBirth')) {
+      return { error: 'Date of birth must be in YYYY-MM-DD format and you must be 18+.' };
+    }
+    return { error: 'Could not finish setting up your account. Please try again.' };
   }
 }
 
@@ -138,7 +179,7 @@ export const createLinkToken = async (user: User) => {
         client_user_id: user.$id
       },
       client_name: `${user.firstName} ${user.lastName}`,
-      products: ['auth'] as Products[],
+      products: ['auth', 'transactions'] as Products[],
       language: 'en',
       country_codes: ['US'] as CountryCode[],
     }
@@ -218,11 +259,11 @@ export const exchangePublicToken = async ({
       processorToken,
       bankName: accountData.name,
     });
-    
-    // If the funding source URL is not created, throw an error
-    if (!fundingSourceUrl) throw Error;
 
-    // Create a bank account using the user ID, item ID, account ID, access token, funding source URL, and shareableId ID
+    if (!fundingSourceUrl) {
+      return { error: 'Could not connect this bank to your payment profile.' };
+    }
+
     await createBankAccount({
       userId: user.$id,
       bankId: itemId,
@@ -232,15 +273,16 @@ export const exchangePublicToken = async ({
       shareableId: encryptId(accountData.account_id),
     });
 
-    // Revalidate the path to reflect the changes
     revalidatePath("/");
 
-    // Return a success message
-    return parseStringify({
-      publicTokenExchange: "complete",
-    });
-  } catch (error) {
+    return { success: true };
+  } catch (error: any) {
     console.error("An error occurred while creating exchanging token:", error);
+    const code = error?.response?.data?.error_code;
+    if (code === 'ADDITIONAL_CONSENT_REQUIRED') {
+      return { error: 'Please re-link your bank — additional consent is required.' };
+    }
+    return { error: 'Could not link your bank. Please try again.' };
   }
 }
 

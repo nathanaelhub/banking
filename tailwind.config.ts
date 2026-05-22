@@ -24,6 +24,16 @@ const config = {
           1: "rgba(255, 255, 255, 0.10)",
         },
         bankGradient: "#7C3AED",
+        // Apex Finance Design System
+        apexBg: '#FAFAF7',
+        apexBg2: '#F4F3EE',
+        apexSurface: '#FFFFFF',
+        apexInk: '#14111C',
+        apexInk2: '#3A3547',
+        apexInk3: '#6B6577',
+        apexInk4: '#A39FAE',
+        apexLine: '#ECEAE3',
+        apexLine2: '#E3E1DA',
         indigo: {
           500: "#6172F3",
           700: "#3538CD",
@@ -70,7 +80,7 @@ const config = {
         },
       },
       backgroundImage: {
-        "bank-gradient": "linear-gradient(135deg, #5B21B6 0%, #7C3AED 100%)",
+        "bank-gradient": "linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)",
         "gradient-mesh": "url('/icons/gradient-mesh.svg')",
         "bank-green-gradient":
           "linear-gradient(90deg, #01797A 0%, #489399 100%)",
@@ -86,6 +96,8 @@ const config = {
       fontFamily: {
         inter: "var(--font-inter)",
         "ibm-plex-serif": "var(--font-ibm-plex-serif)",
+        geist: ["var(--font-geist-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        "geist-mono": ["var(--font-geist-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
       },
       keyframes: {
         "accordion-down": {
