@@ -17,18 +17,26 @@ const getEnvironment = (): "production" | "sandbox" => {
   }
 };
 
-const dwollaClient = new Client({
-  environment: getEnvironment(),
-  key: process.env.DWOLLA_KEY as string,
-  secret: process.env.DWOLLA_SECRET as string,
-});
+// Lazily construct the Dwolla client so importing this module at build time
+// doesn't fail when env vars aren't available (e.g. during Next.js page-data
+// collection). The client is only built when an action is actually called.
+let _dwollaClient: Client | null = null;
+const dwollaClient = (): Client => {
+  if (_dwollaClient) return _dwollaClient;
+  _dwollaClient = new Client({
+    environment: getEnvironment(),
+    key: process.env.DWOLLA_KEY as string,
+    secret: process.env.DWOLLA_SECRET as string,
+  });
+  return _dwollaClient;
+};
 
 // Create a Dwolla Funding Source using a Plaid Processor Token
 export const createFundingSource = async (
   options: CreateFundingSourceOptions
 ) => {
   try {
-    return await dwollaClient
+    return await dwollaClient()
       .post(`customers/${options.customerId}/funding-sources`, {
         name: options.fundingSourceName,
         plaidToken: options.plaidToken,
@@ -56,7 +64,7 @@ export const createFundingSource = async (
 
 export const createOnDemandAuthorization = async () => {
   try {
-    const onDemandAuthorization = await dwollaClient.post(
+    const onDemandAuthorization = await dwollaClient().post(
       "on-demand-authorizations"
     );
     const authLink = onDemandAuthorization.body._links;
@@ -70,7 +78,7 @@ export const createDwollaCustomer = async (
   newCustomer: NewDwollaCustomerParams
 ) => {
   try {
-    return await dwollaClient
+    return await dwollaClient()
       .post("customers", newCustomer)
       .then((res) => res.headers.get("location"));
   } catch (err) {
@@ -98,7 +106,7 @@ export const createTransfer = async ({
         value: amount,
       },
     };
-    return await dwollaClient
+    return await dwollaClient()
       .post("transfers", requestBody)
       .then((res) => res.headers.get("location"));
   } catch (err) {
