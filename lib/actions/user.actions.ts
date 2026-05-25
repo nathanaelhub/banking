@@ -200,27 +200,23 @@ export const createBankAccount = async ({
   fundingSourceUrl,
   shareableId,
 }: createBankAccountProps) => {
-  try {
-    const { database } = await createAdminClient();
+  const { database } = await createAdminClient();
 
-    const bankAccount = await database.createDocument(
-      DATABASE_ID!,
-      BANK_COLLECTION_ID!,
-      ID.unique(),
-      {
-        userId,
-        bankId,
-        accountId,
-        accessToken,
-        fundingSourceUrl,
-        shareableId,
-      }
-    )
+  const bankAccount = await database.createDocument(
+    DATABASE_ID!,
+    BANK_COLLECTION_ID!,
+    ID.unique(),
+    {
+      userId,
+      bankId,
+      accountId,
+      accessToken,
+      fundingSourceUrl,
+      shareableId,
+    }
+  );
 
-    return parseStringify(bankAccount);
-  } catch (error) {
-    console.log(error);
-  }
+  return parseStringify(bankAccount);
 }
 
 export const exchangePublicToken = async ({
@@ -264,7 +260,7 @@ export const exchangePublicToken = async ({
       return { error: 'Could not connect this bank to your payment profile.' };
     }
 
-    await createBankAccount({
+    const savedBank = await createBankAccount({
       userId: user.$id,
       bankId: itemId,
       accountId: accountData.account_id,
@@ -272,6 +268,10 @@ export const exchangePublicToken = async ({
       fundingSourceUrl,
       shareableId: encryptId(accountData.account_id),
     });
+
+    if (!savedBank) {
+      return { error: 'Bank linked at Plaid/Dwolla but could not be saved. Check the banks collection in Appwrite.' };
+    }
 
     revalidatePath("/");
 
@@ -303,6 +303,7 @@ export const getBanks = async ({ userId }: getBanksProps) => {
 }
 
 export const getBank = async ({ documentId }: getBankProps) => {
+  if (!documentId) return null;
   try {
     const { database } = await createAdminClient();
 

@@ -66,8 +66,12 @@ export const getAccounts = async ({ userId }: getAccountsProps) => {
 // Get one bank account
 export const getAccount = async ({ appwriteItemId }: getAccountProps) => {
   try {
+    if (!appwriteItemId) return null;
+
     // get bank from db
     const bank = await getBank({ documentId: appwriteItemId });
+
+    if (!bank) return null;
 
     // get account info from plaid
     const accountsResponse = await plaidClient.accountsGet({

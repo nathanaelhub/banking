@@ -36,17 +36,19 @@ export const createFundingSource = async (
       .then((res) => res.headers.get("location"));
   } catch (err: any) {
     // If this bank is already attached to the customer, reuse the existing
-    // funding-source URL instead of failing. Dwolla returns its href in the
-    // error body under _links.about.href.
-    const raw = typeof err?.message === 'string' ? err.message : '';
-    if (raw.includes('"DuplicateResource"')) {
-      try {
-        const parsed = JSON.parse(raw);
-        const existingUrl = parsed?._links?.about?.href;
-        if (existingUrl) return existingUrl;
-      } catch {
-        // fall through
-      }
+    // funding-source URL instead of failing.
+    const existingUrl =
+      err?.body?._links?.about?.href ??
+      (() => {
+        try {
+          return JSON.parse(err?.message || '{}')?._links?.about?.href;
+        } catch {
+          return undefined;
+        }
+      })();
+    const code = err?.body?.code;
+    if (code === 'DuplicateResource' && existingUrl) {
+      return existingUrl;
     }
     console.error("Creating a Funding Source Failed: ", err);
   }
