@@ -110,14 +110,14 @@ const AuthForm = ({ type }: { type: string }) => {
             className="text-[18px] font-semibold tracking-[-0.01em] text-[#14111C]"
             style={{ fontFamily: 'var(--font-geist, sans-serif)' }}
           >
-            Apex Finance
+            Nova Finance
           </span>
         </Link>
 
         <div className="flex flex-col gap-1.5">
           {/* Security badge */}
           <span
-            className="apex-badge apex-badge-violet mb-1 self-start"
+            className="nova-badge nova-badge-violet mb-1 self-start"
           >
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
               <path d="M12 22S4 18 4 12V5L12 2L20 5V12C20 18 12 22 12 22Z" stroke="#5B21B6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -135,9 +135,9 @@ const AuthForm = ({ type }: { type: string }) => {
           </h1>
           <p className="text-[13.5px] text-[#6B6577]">
             {user
-              ? 'Connect your bank account to get started with Apex Finance.'
+              ? 'Connect your bank account to get started with Nova Finance.'
               : type === 'sign-in'
-                ? 'Sign in to your Apex Finance account.'
+                ? 'Sign in to your Nova Finance account.'
                 : 'Get started — it only takes a minute.'
             }
           </p>

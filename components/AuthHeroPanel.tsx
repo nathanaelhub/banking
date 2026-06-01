@@ -66,8 +66,8 @@ const AuthHeroPanel = () => {
             }}
           />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
-            <span style={{ fontSize: 12, fontWeight: 500, opacity: .9 }}>Apex Checking</span>
-            <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '.04em' }}>apex.</span>
+            <span style={{ fontSize: 12, fontWeight: 500, opacity: .9 }}>Nova Checking</span>
+            <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '.04em' }}>nova.</span>
           </div>
           <div style={{ width: 26, height: 18, borderRadius: 4, background: 'linear-gradient(135deg,#F2D58A,#C99B36)', marginTop: 16 }} />
           <div style={{ marginTop: 28, fontFamily: 'monospace', letterSpacing: '.18em', fontSize: 14, opacity: .9 }}>

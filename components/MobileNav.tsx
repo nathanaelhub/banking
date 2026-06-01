@@ -75,7 +75,7 @@ const MobileNav = ({ user }: MobileNavProps) => {
                 </svg>
               </div>
               <span className="text-[17px] font-semibold tracking-[-0.01em] text-[#14111C]">
-                Apex Finance
+                Nova Finance
               </span>
             </Link>
           </div>

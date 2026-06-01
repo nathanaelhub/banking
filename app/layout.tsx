@@ -7,10 +7,14 @@ import { Toaster } from "sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Apex Finance",
-  description: "Apex Finance — modern banking built for clarity and control.",
+  title: "Nova Finance",
+  description: "Nova Finance — modern banking built for clarity and control.",
   icons: {
-    icon: '/icons/logo.svg'
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
   }
 };
 
@@ -21,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${GeistSans.variable} ${GeistMono.variable} font-geist bg-apexBg text-apexInk antialiased`}>
+      <body className={`${GeistSans.variable} ${GeistMono.variable} font-geist bg-novaBg text-novaInk antialiased`}>
         {children}
         <Toaster richColors position="top-right" />
       </body>

@@ -3,12 +3,14 @@ import TransactionSearch from '@/components/TransactionSearch';
 import { getAccount, getAccounts } from '@/lib/actions/bank.actions';
 import { getLoggedInUser } from '@/lib/actions/user.actions';
 import { formatAmount } from '@/lib/utils';
+import { redirect } from 'next/navigation';
 
 const TransactionHistory = async ({ searchParams: { id } }: SearchParamProps) => {
   const loggedIn = await getLoggedInUser();
-  const accounts = await getAccounts({ userId: loggedIn.$id });
+  if (!loggedIn) redirect('/sign-in');
 
-  if (!accounts) return;
+  const accounts = await getAccounts({ userId: loggedIn.$id });
+  if (!accounts) return null;
 
   const accountsData = accounts?.data;
   const appwriteItemId = (id as string) || accountsData[0]?.appwriteItemId;

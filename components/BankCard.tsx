@@ -38,7 +38,7 @@ const BankCard = ({ account, userName, showBalance = true }: CreditCardProps) =>
             {account.name}
           </span>
           <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '.04em', opacity: .95 }}>
-            apex.
+            nova.
           </span>
         </div>
 

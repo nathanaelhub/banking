@@ -10,25 +10,25 @@ import { cn, formatAmount, formatDateTime, getTransactionStatus, removeSpecialCh
 
 // Status → badge tone map
 const statusToneMap: Record<string, string> = {
-  Success: 'apex-badge-green',
-  Processing: 'apex-badge-amber',
-  Failed: 'apex-badge-red',
+  Success: 'nova-badge-green',
+  Processing: 'nova-badge-amber',
+  Failed: 'nova-badge-red',
 }
 
 // Category → badge tone map
 const categoryToneMap: Record<string, string> = {
-  'Food and Drink': 'apex-badge-blue',
-  Travel: 'apex-badge-violet',
-  Payment: 'apex-badge-green',
-  'Bank Fees': 'apex-badge-amber',
-  Transfer: 'apex-badge-violet',
-  default: 'apex-badge-gray',
+  'Food and Drink': 'nova-badge-blue',
+  Travel: 'nova-badge-violet',
+  Payment: 'nova-badge-green',
+  'Bank Fees': 'nova-badge-amber',
+  Transfer: 'nova-badge-violet',
+  default: 'nova-badge-gray',
 }
 
 const StatusBadge = ({ status }: { status: string }) => {
-  const tone = statusToneMap[status] ?? 'apex-badge-gray'
+  const tone = statusToneMap[status] ?? 'nova-badge-gray'
   return (
-    <span className={cn('apex-badge', tone)}>
+    <span className={cn('nova-badge', tone)}>
       {status}
     </span>
   )
@@ -37,7 +37,7 @@ const StatusBadge = ({ status }: { status: string }) => {
 const CategoryBadge = ({ category }: { category: string }) => {
   const tone = categoryToneMap[category] ?? categoryToneMap.default
   return (
-    <span className={cn('apex-badge', tone)}>
+    <span className={cn('nova-badge', tone)}>
       {category}
     </span>
   )

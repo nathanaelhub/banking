@@ -1,4 +1,4 @@
-# Apex Finance
+# Nova Finance
 
 A full-stack fintech banking application built with Next.js 14, featuring real bank account connections, live transaction data, fund transfers, and spending analytics.
 
@@ -17,7 +17,7 @@ A full-stack fintech banking application built with Next.js 14, featuring real b
 - **Transaction Search** — Live search by name, filter by category, local pagination, and one-click CSV export
 - **Transaction History** — Full transaction history per account with detailed status and category badges
 - **My Banks** — View all connected accounts with card details and account info
-- **Fund Transfers** — Send money between Apex users via Dwolla ACH transfers
+- **Fund Transfers** — Send money between Nova users via Dwolla ACH transfers
 - **Toast Notifications** — Real-time success and error feedback on all auth actions
 - **Responsive** — Fully responsive across desktop, tablet, and mobile with a collapsible mobile nav
 

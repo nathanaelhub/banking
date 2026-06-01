@@ -87,8 +87,8 @@ body {
   flex-shrink: 0;
 }
 
-/* Apex badges */
-.apex-badge {
+/* Nova badges */
+.nova-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -100,32 +100,32 @@ body {
   white-space: nowrap;
 }
 
-.apex-badge-green {
+.nova-badge-green {
   background: #E8F6EE;
   color: #1F8A5B;
 }
 
-.apex-badge-red {
+.nova-badge-red {
   background: #FBE9E9;
   color: #C5304A;
 }
 
-.apex-badge-amber {
+.nova-badge-amber {
   background: #FBF1DD;
   color: #A6711F;
 }
 
-.apex-badge-violet {
+.nova-badge-violet {
   background: #F4EEFF;
   color: #5B21B6;
 }
 
-.apex-badge-blue {
+.nova-badge-blue {
   background: #E6EEFB;
   color: #2A6FDB;
 }
 
-.apex-badge-gray {
+.nova-badge-gray {
   background: #F4F3EE;
   color: #3A3547;
 }
@@ -275,7 +275,7 @@ body {
 
   /* My Banks */
   .my-banks {
-    @apply flex h-screen max-h-screen w-full flex-col gap-8 bg-[#FAFAF7] p-8 xl:py-12;
+    @apply flex max-h-screen w-full flex-col gap-6 overflow-y-scroll bg-[#FAFAF7] px-8 py-7;
   }
 
   /* Transactions page */

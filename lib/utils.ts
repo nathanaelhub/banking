@@ -211,7 +211,7 @@ export function exportTransactionsToCSV(transactions: Transaction[]) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `apex-transactions-${new Date().toISOString().split('T')[0]}.csv`;
+  a.download = `nova-transactions-${new Date().toISOString().split('T')[0]}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
