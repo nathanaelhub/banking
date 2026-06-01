@@ -6,10 +6,13 @@ import SpendingChart from '@/components/SpendingChart';
 import TotalBalanceBox from '@/components/TotalBalanceBox';
 import { getAccount, getAccounts } from '@/lib/actions/bank.actions';
 import { getLoggedInUser } from '@/lib/actions/user.actions';
+import { redirect } from 'next/navigation';
 
 const Home = async ({ searchParams: { id, page } }: SearchParamProps) => {
   const currentPage = Number(page as string) || 1;
   const loggedIn = await getLoggedInUser();
+  if (!loggedIn) redirect('/sign-in');
+
   const accounts = await getAccounts({
     userId: loggedIn.$id
   })
@@ -23,7 +26,7 @@ const Home = async ({ searchParams: { id, page } }: SearchParamProps) => {
           <header className="home-header">
             <HeaderBox
               type="greeting"
-              title="Welcome to Apex"
+              title="Welcome to Nova"
               user={loggedIn?.firstName || 'Guest'}
               subtext="Link your first bank account to get started."
             />
