@@ -211,7 +211,13 @@ declare interface TotalBalanceBoxProps {
 
 declare interface FooterProps {
   user: User;
-  type?: 'mobile' | 'desktop'
+  type?: 'mobile' | 'desktop';
+  showManageBilling?: boolean;
+}
+
+declare interface SubscriptionSummary {
+  status: 'none' | 'trialing' | 'active' | 'past_due' | 'unpaid' | 'incomplete' | 'incomplete_expired' | 'canceled' | 'paused';
+  trialEnd: number | null;
 }
 
 declare interface RightSidebarProps {
@@ -222,6 +228,7 @@ declare interface RightSidebarProps {
 
 declare interface SiderbarProps {
   user: User;
+  subscription?: SubscriptionSummary;
 }
 
 declare interface RecentTransactionsProps {

@@ -1,6 +1,7 @@
 import MobileNav from "@/components/MobileNav";
 import Sidebar from "@/components/Sidebar";
 import { getLoggedInUser } from "@/lib/actions/user.actions";
+import { getSubscriptionStateByEmail, hasAccess } from "@/lib/stripe";
 import { redirect } from "next/navigation";
 
 export default async function RootLayout({
@@ -12,9 +13,18 @@ export default async function RootLayout({
 
   if(!loggedIn) redirect('/sign-in')
 
+  const subscription = await getSubscriptionStateByEmail(loggedIn.email);
+  if (!hasAccess(subscription)) {
+    redirect('/pricing');
+  }
+  const sidebarSubscription = {
+    status: subscription.status,
+    trialEnd: subscription.trialEnd,
+  };
+
   return (
     <main className="flex h-screen w-full" style={{ fontFamily: 'var(--font-geist, system-ui, sans-serif)' }}>
-      <Sidebar user={loggedIn} />
+      <Sidebar user={loggedIn} subscription={sidebarSubscription} />
 
       <div className="flex size-full flex-col">
         <div className="root-layout">
