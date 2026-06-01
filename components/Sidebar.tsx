@@ -39,14 +39,23 @@ const iconMap: Record<string, React.ComponentType<{ active: boolean }>> = {
   '/payment-transfer': TransferIcon,
 }
 
-const Sidebar = ({ user }: SiderbarProps) => {
+function daysLeft(trialEnd: number | null): number | null {
+  if (!trialEnd) return null;
+  const ms = trialEnd * 1000 - Date.now();
+  if (ms <= 0) return 0;
+  return Math.ceil(ms / (1000 * 60 * 60 * 24));
+}
+
+const Sidebar = ({ user, subscription }: SiderbarProps) => {
   const pathname = usePathname();
+  const trialDays = subscription?.status === 'trialing' ? daysLeft(subscription.trialEnd) : null;
+  const showManageBilling = subscription?.status === 'trialing' || subscription?.status === 'active';
 
   return (
     <section className="sidebar">
       <nav className="flex flex-col gap-1">
         {/* Logo / Brand mark */}
-        <Link href="/" className="mb-8 cursor-pointer flex items-center gap-2.5 px-2.5">
+        <Link href="/" className="mb-3 cursor-pointer flex items-center gap-2.5 px-2.5">
           <div className="brand-mark">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 2.4 13.6 10.4 21.6 12 13.6 13.6 12 21.6 10.4 13.6 2.4 12 10.4 10.4Z" fill="#fff"/>
@@ -54,9 +63,22 @@ const Sidebar = ({ user }: SiderbarProps) => {
             </svg>
           </div>
           <h1 className="sidebar-logo">
-            Apex<span className="text-[#7C3AED]">.</span>
+            Nova<span className="text-[#7C3AED]">.</span>
           </h1>
         </Link>
+
+        {trialDays !== null && (
+          <Link
+            href="/pricing"
+            className="mx-2.5 mb-3 inline-flex items-center gap-2 px-2.5 py-1.5 rounded-[8px] bg-[#F4EEFF] border border-[#E8DBFF] hover:bg-[#E8DBFF] transition-colors"
+            title="Manage subscription"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED]" />
+            <span className="text-[11.5px] font-medium text-[#5B21B6] max-xl:hidden">
+              {trialDays > 0 ? `${trialDays} day${trialDays === 1 ? '' : 's'} left in trial` : 'Trial ending today'}
+            </span>
+          </Link>
+        )}
 
         {sidebarLinks.map((item) => {
           const isActive =
@@ -88,7 +110,7 @@ const Sidebar = ({ user }: SiderbarProps) => {
         </div>
       </nav>
 
-      <Footer user={user} />
+      <Footer user={user} showManageBilling={showManageBilling} />
     </section>
   )
 }

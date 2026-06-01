@@ -2,15 +2,49 @@
 
 import { logoutAccount } from '@/lib/actions/user.actions'
 import { useRouter } from 'next/navigation'
-import React from 'react'
+import React, { useState } from 'react'
+import { toast } from 'sonner'
 
-const Footer = ({ user, type = 'desktop' }: FooterProps) => {
+const Footer = ({ user, type = 'desktop', showManageBilling = false }: FooterProps) => {
   const router = useRouter();
+  const [openingPortal, setOpeningPortal] = useState(false);
 
   const handleLogOut = async () => {
     const loggedOut = await logoutAccount();
     if (loggedOut) router.push('/sign-in')
   }
+
+  const handleManageBilling = async () => {
+    setOpeningPortal(true);
+    try {
+      const res = await fetch('/api/stripe/portal', { method: 'POST' });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error(data.error || 'Could not open billing portal');
+        setOpeningPortal(false);
+      }
+    } catch {
+      toast.error('Something went wrong');
+      setOpeningPortal(false);
+    }
+  }
+
+  const billingButton = showManageBilling ? (
+    <button
+      onClick={handleManageBilling}
+      disabled={openingPortal}
+      className="w-7 h-7 flex items-center justify-center rounded-[8px] hover:bg-[#F4F3EE] transition-colors flex-shrink-0 disabled:opacity-40"
+      aria-label="Manage billing"
+      title="Manage billing"
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6B6577" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2.5" y="6" width="19" height="13" rx="2.5"/>
+        <path d="M2.5 10h19"/>
+      </svg>
+    </button>
+  ) : null;
 
   if (type === 'mobile') {
     return (
@@ -27,6 +61,7 @@ const Footer = ({ user, type = 'desktop' }: FooterProps) => {
           </b>
           <span className="text-[11.5px] text-[#6B6577] truncate">{user?.email}</span>
         </div>
+        {billingButton}
         <button
           onClick={handleLogOut}
           className="w-7 h-7 flex items-center justify-center rounded-[8px] hover:bg-[#F4F3EE] transition-colors flex-shrink-0"
@@ -56,6 +91,7 @@ const Footer = ({ user, type = 'desktop' }: FooterProps) => {
         <span className="text-[11.5px] text-[#6B6577] truncate">{user?.email}</span>
       </div>
 
+      {billingButton}
       <button
         onClick={handleLogOut}
         className="w-7 h-7 flex items-center justify-center rounded-[8px] hover:bg-[#F4F3EE] transition-colors flex-shrink-0 max-xl:hidden"
